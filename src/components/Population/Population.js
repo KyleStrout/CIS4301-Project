@@ -2,19 +2,18 @@ import React from "react";
 import { useEffect, useState } from 'react'
 import { Switch, Route, Link } from 'react-router-dom'
 
-function Profitability(props) {
+function Population(props) {
     return (
         <React.Fragment>
             <div>
-                <h3>Profitability</h3>
+                <h3>Population</h3>
             </div>
             <div>
-                Todo Content here
+                TODO Content Here
             </div>
         </React.Fragment>
-
 
     );
 }
 
-export default Profitability
+export default Population
