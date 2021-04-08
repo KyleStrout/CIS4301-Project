@@ -81,6 +81,9 @@ function FuelConsumption(props) {
                 }
             }
         });
+        return () => {
+            myChart.destroy()
+        }
         setChart(myChart)
     }, [oracleData])// Listens for oracle data to update before creating chart
 
@@ -92,6 +95,7 @@ function FuelConsumption(props) {
         }
     }
 
+    // TODO: Create file to work with database and implement this here
     function callToOracle() {
         if (beginningYear && endYear) {
             let query = 'SELECT * FROM TABLE WHERE START_YEAR = ' + beginningYear + ' AND END_YEAR = ' + endYear
@@ -109,60 +113,8 @@ function FuelConsumption(props) {
         setEndYear(value)// set state
     }
 
-
-
     return (
-        <div>
-            <div>
-                <h1>Multi-Faceted Impacts of Domestic Air Travel</h1>
-                <h4>Group 25: Chason Pratt, Kaj Weigerink, Peter Huang, and Kyle Strout</h4>
-            </div>
-
-            <div>
-                <nav class="navbar navbar-expand-sm bg-light navbar-light">
-                    <ul class="navbar-nav ml auto">
-                    </ul>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarText">
-                        <ul class="navbar-nav mx-auto">
-                            <li class="nav-item">
-                                <Link to='/' className="nav-link">
-                                    Home
-              </Link>
-                            </li>
-                            <li class="nav-item">
-
-                                <Link to="/profitability" className="nav-link">
-                                    Profitability
-              </Link>
-                            </li>
-                            <li class="nav-item">
-                                <Link to="/population" className="nav-link">
-                                    Population
-                </Link>
-                            </li>
-                            <li class="nav-item">
-                                <Link to="/tourism" className="nav-link">
-                                    Tourism
-                </Link>
-                            </li>
-                            <li class="nav-item">
-                                <Link to="/fuel-consumption" className="nav-link">
-                                    Fuel Consumption
-              </Link>
-                            </li>
-                            <li class="nav-item">
-                                <Link to="/environmental-impact" className="nav-link">
-                                    Enviromental Impact
-              </Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                </nav>
-            </div>
+        <React.Fragment>
             <div>
                 <h3>Fuel Consumption</h3>
             </div>
@@ -197,11 +149,7 @@ function FuelConsumption(props) {
                     <canvas id="myChart" width="80%" height="20%"></canvas>
                 }
             </div>
-
-        </div >
-
-
-
+        </React.Fragment>
     );
 }
 
