@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import { Switch, Route, Link } from 'react-router-dom'
 
 function FuelConsumption(props) {
-    const MAX_END_YEAR = 2021
-    const MIN_BEGINNING_YEAR = 1950
+    const MAX_END_YEAR = 2009
+    const MIN_BEGINNING_YEAR = 1990
 
     const [beginningYear, setBeginningYear] = useState(null)
     const [endYear, setEndYear] = useState(null)

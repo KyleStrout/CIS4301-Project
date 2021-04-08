@@ -9,7 +9,7 @@ function Profitability(props) {
                 <h3>Profitability</h3>
             </div>
             <div>
-                Todo Content here
+                TODO Content here
             </div>
         </React.Fragment>
 
