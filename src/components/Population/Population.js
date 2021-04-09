@@ -12,7 +12,6 @@ function Population(props) {
                 TODO Content Here ddad
             </div>
         </React.Fragment>
-
     );
 }
 
