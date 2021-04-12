@@ -2,7 +2,6 @@ import React from "react";
 import { useEffect, useState } from 'react'
 import Chart from 'chart.js/auto';
 import { Switch, Route, Link } from 'react-router-dom'
-import Button from 'react-bootstrap/Button'
 
 function Profitability(props) {
     const MAX_END_YEAR = 2009

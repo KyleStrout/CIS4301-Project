@@ -12,14 +12,14 @@ function EnviromentalImpact(props) {
     const [chart, setChart] = useState(null)
     const [validYears, setValidYears] = useState(null)
     const [validEndYears, setValidEndYears] = useState(null)
-    const [oracleData, setOracleData] = useState(null)
+    const [cO2EmissionData, setCO2EmissionData] = useState(null)
 
     // Call on render, create a list of valid years
     // useEffect takes an inline function and list of variables it should listen to
     useEffect(function () {
         let newListOfYears = []
         // iterate through some time
-        for (let index = MIN_BEGINNING_YEAR; index < MAX_END_YEAR; index++) {
+        for (let index = MIN_BEGINNING_YEAR; index <= MAX_END_YEAR; index++) {
             newListOfYears.push(index)
         }
         // Set the 'validYears' state to the new list of valid years
@@ -29,7 +29,7 @@ function EnviromentalImpact(props) {
     // if variables are updated, calls the inline function 
     useEffect(function () {
         let newEndYears = []
-        for (let index = beginningYear; index < MAX_END_YEAR; index++) {
+        for (let index = beginningYear; index <= MAX_END_YEAR; index++) {
             newEndYears.push(index)
         }
 
@@ -46,14 +46,23 @@ function EnviromentalImpact(props) {
         for (let index = beginningYear; index <= endYear; index++) {
             chartYears.push(index)
         }
+
+        let cO2Data = []
+
+        if (cO2EmissionData) {
+            for (let index = 0; index < cO2EmissionData.length; index++) {
+                cO2Data.push(cO2EmissionData[index].CO2_KILOS)
+            }
+        }
+
         // Initialize our chart
         let myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: chartYears,
                 datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
+                    label: 'CO2 Emissions In Tonnes',
+                    data: cO2Data,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -85,7 +94,7 @@ function EnviromentalImpact(props) {
             myChart.destroy()
         }
         setChart(myChart)
-    }, [oracleData])// Listens for oracle data to update before creating chart
+    }, [cO2EmissionData])// Listens for oracle data to update before creating chart
 
     // clears chart 
     function resetChart() {
@@ -95,12 +104,15 @@ function EnviromentalImpact(props) {
         }
     }
 
-    // TODO: Create file to work with database and implement this here
-    function callToOracle() {
-        if (beginningYear && endYear) {
-            let query = 'SELECT * FROM TABLE WHERE START_YEAR = ' + beginningYear + ' AND END_YEAR = ' + endYear
-            setOracleData(query)
-        }
+
+
+    async function getCO2Emissions() {
+        let url = `http://localhost:3001/enviromental-impact?beginningYear=${beginningYear}&endYear=${endYear}`
+        await fetch(url).then(requestResponse => {
+            requestResponse.json().then(json => {
+                setCO2EmissionData(json)
+            })
+        })
     }
 
     function handleBeginYearChange(value) {
@@ -142,10 +154,10 @@ function EnviromentalImpact(props) {
             </div>
             <div>
                 {/* Disable the button if we dont have a beginning and end year selected */}
-                <button disabled={beginningYear && endYear ? false : true} onClick={() => { callToOracle() }}>Calculate Fuel Consumption</button>
+                <button disabled={beginningYear && endYear ? false : true} onClick={() => { getCO2Emissions() }}>Calculate Enviromental Impact</button>
             </div>
             <div>
-                {oracleData &&
+                {cO2EmissionData &&
                     <canvas id="myChart" width="80%" height="20%"></canvas>
                 }
             </div>
