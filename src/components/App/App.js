@@ -9,6 +9,7 @@ import FuelConsumption from '../FuelConsumption';
 import EnviromentalImpact from '../EnviromentalImpact';
 
 function App() {
+
   return (
     <div className="App">
       <div>

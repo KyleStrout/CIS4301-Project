@@ -3,23 +3,25 @@ import Chart from 'chart.js/auto';
 import { useEffect, useState } from 'react'
 import { Switch, Route, Link } from 'react-router-dom'
 
+
 function FuelConsumption(props) {
     const MAX_END_YEAR = 2009
     const MIN_BEGINNING_YEAR = 1990
-
+    //OracleDBHelpers.run()
     const [beginningYear, setBeginningYear] = useState(null)
     const [endYear, setEndYear] = useState(null)
     const [chart, setChart] = useState(null)
     const [validYears, setValidYears] = useState(null)
     const [validEndYears, setValidEndYears] = useState(null)
-    const [oracleData, setOracleData] = useState(null)
+    const [fuelConsumptionData, setFuelConsumptionData] = useState(null)
+
 
     // Call on render, create a list of valid years
     // useEffect takes an inline function and list of variables it should listen to
     useEffect(function () {
         let newListOfYears = []
         // iterate through some time
-        for (let index = MIN_BEGINNING_YEAR; index < MAX_END_YEAR; index++) {
+        for (let index = MIN_BEGINNING_YEAR; index <= MAX_END_YEAR; index++) {
             newListOfYears.push(index)
         }
         // Set the 'validYears' state to the new list of valid years
@@ -29,7 +31,7 @@ function FuelConsumption(props) {
     // if variables are updated, calls the inline function 
     useEffect(function () {
         let newEndYears = []
-        for (let index = beginningYear; index < MAX_END_YEAR; index++) {
+        for (let index = beginningYear; index <= MAX_END_YEAR; index++) {
             newEndYears.push(index)
         }
 
@@ -46,14 +48,22 @@ function FuelConsumption(props) {
         for (let index = beginningYear; index <= endYear; index++) {
             chartYears.push(index)
         }
+        let fuelData = []
+
+        if (fuelConsumptionData) {
+            for (let index = 0; index < fuelConsumptionData.length; index++) {
+                fuelData.push(fuelConsumptionData[index].FUEL_USED)
+            }
+        }
+
         // Initialize our chart
         let myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: chartYears,
                 datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
+                    label: 'Litres Of Fuel Used Per Year',
+                    data: fuelData,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -85,7 +95,7 @@ function FuelConsumption(props) {
             myChart.destroy()
         }
         setChart(myChart)
-    }, [oracleData])// Listens for oracle data to update before creating chart
+    }, [fuelConsumptionData])// Listens for fuelConsumptionData to update before creating chart
 
     // clears chart 
     function resetChart() {
@@ -95,12 +105,13 @@ function FuelConsumption(props) {
         }
     }
 
-    // TODO: Create file to work with database and implement this here
-    function callToOracle() {
-        if (beginningYear && endYear) {
-            let query = 'SELECT * FROM TABLE WHERE START_YEAR = ' + beginningYear + ' AND END_YEAR = ' + endYear
-            setOracleData(query)
-        }
+    async function getFuelConsumption() {
+        let url = `http://localhost:3001/fuel-consumption?beginningYear=${beginningYear}&endYear=${endYear}`
+        await fetch(url).then(requestResponse => {
+            requestResponse.json().then(json => {
+                setFuelConsumptionData(json)
+            })
+        })
     }
 
     function handleBeginYearChange(value) {
@@ -142,14 +153,15 @@ function FuelConsumption(props) {
             </div>
             <div>
                 {/* Disable the button if we dont have a beginning and end year selected */}
-                <button disabled={beginningYear && endYear ? false : true} onClick={() => { callToOracle() }}>Calculate Fuel Consumption</button>
+                <button disabled={beginningYear && endYear ? false : true} onClick={() => { getFuelConsumption() }}>Calculate Fuel Consumption</button>
             </div>
             <div>
-                {oracleData &&
+                {fuelConsumptionData &&
                     <canvas id="myChart" width="80%" height="20%"></canvas>
                 }
             </div>
-        </React.Fragment>
+
+        </React.Fragment >
     );
 }
 
