@@ -3,16 +3,22 @@ import { useEffect, useState } from 'react'
 import Chart from 'chart.js/auto';
 import { Switch, Route, Link } from 'react-router-dom'
 
+const abvHelper = require('./abv')
+
+
 function Profitability(props) {
     const MAX_END_YEAR = 2009
     const MIN_BEGINNING_YEAR = 1990
-
+    let originABVList = []
+    originABVList = abvHelper.getOriginABVList(originABVList)
+    let destABVList = []
+    destABVList = abvHelper.getDestinationABVList(destABVList)
     const [beginningYear, setBeginningYear] = useState(null)
     const [endYear, setEndYear] = useState(null)
     const [chart, setChart] = useState(null)
     const [validYears, setValidYears] = useState(null)
     const [validEndYears, setValidEndYears] = useState(null)
-    const [oracleData, setOracleData] = useState(null)
+    const [profitabilityData, setProfitabilityData] = useState(null)
     const [originABV, setOriginABV] = useState(null)
     const [destABV, setDestABV] = useState(null)
 
@@ -21,7 +27,7 @@ function Profitability(props) {
     useEffect(function () {
         let newListOfYears = []
         // iterate through some time
-        for (let index = MIN_BEGINNING_YEAR; index < MAX_END_YEAR; index++) {
+        for (let index = MIN_BEGINNING_YEAR; index <= MAX_END_YEAR; index++) {
             newListOfYears.push(index)
         }
         // Set the 'validYears' state to the new list of valid years
@@ -31,7 +37,7 @@ function Profitability(props) {
     // if variables are updated, calls the inline function 
     useEffect(function () {
         let newEndYears = []
-        for (let index = beginningYear; index < MAX_END_YEAR; index++) {
+        for (let index = beginningYear; index <= MAX_END_YEAR; index++) {
             newEndYears.push(index)
         }
 
@@ -39,6 +45,8 @@ function Profitability(props) {
     }, [beginningYear])
 
     useEffect(function () {
+
+
         setOriginABV()
     }, [])
 
@@ -56,14 +64,23 @@ function Profitability(props) {
         for (let index = beginningYear; index <= endYear; index++) {
             chartYears.push(index)
         }
+
+        let pData = []
+        if (profitabilityData) {
+            for (let index = 0; index < profitabilityData.length; index++) {
+                console.log(profitabilityData[index])
+                pData.push(profitabilityData[index].RATIO)
+            }
+        }
+
         // Initialize our chart
         let myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: chartYears,
                 datasets: [{
-                    label: originABV + ' to ' + destABV,
-                    data: [12, 19, 3, 5, 2, 3],
+                    label: 'Profitability Ratio from ' + originABV + ' to ' + destABV,
+                    data: pData,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -86,7 +103,9 @@ function Profitability(props) {
             options: {
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        suggestedMax: 1
+
                     }
                 }
             }
@@ -95,7 +114,7 @@ function Profitability(props) {
             myChart.destroy()
         }
         setChart(myChart)
-    }, [oracleData])// Listens for oracle data to update before creating chart
+    }, [profitabilityData])// Listens for oracle data to update before creating chart
 
     // clears chart 
     function resetChart() {
@@ -105,12 +124,15 @@ function Profitability(props) {
         }
     }
 
-    // TODO: Create file to work with database and implement this here
-    function callToOracle() {
-        if (beginningYear && endYear) {
-            let query = 'SELECT * FROM TABLE WHERE START_YEAR = ' + beginningYear + ' AND END_YEAR = ' + endYear
-            setOracleData(query)
-        }
+
+
+    async function getProfitabilityData() {
+        let url = `http://localhost:3001/profitability?beginningYear=${beginningYear}&endYear=${endYear}&originABV=${originABV}&destABV=${destABV}`
+        await fetch(url).then(requestResponse => {
+            requestResponse.json().then(json => {
+                setProfitabilityData(json)
+            })
+        })
     }
 
     function handleBeginYearChange(value) {
@@ -120,7 +142,8 @@ function Profitability(props) {
     // Handle change for the 'end year' dropdown
     function handleEndYearChange(value) {
         resetChart()
-        setEndYear(value)// set state
+        setEndYear(value)
+        // set state
     }
 
     return (
@@ -128,15 +151,27 @@ function Profitability(props) {
             <div>
                 <h3>Flight Profitability</h3>
             </div>
-            <div>
-                <h6>Origin Abbreviation</h6>
-                <input onChange={event => setOriginABV(event.target.value)} />
 
-            </div>
+
             <div>
-                <h6>Destination Abbreviation</h6>
-                <input onChange={event => setDestABV(event.target.value)} />
+                <select onChange={(e) => { setOriginABV(e.target.value) }}>
+                    <option value="">Select Origin Airport ABV</option>
+                    {
+                        originABVList.map(function (airportAbv, index) {
+                            return <option key={'start' + index} value={airportAbv}>{airportAbv}</option>
+                        })
+                    }
+                </select>
+                <select onChange={(e) => setDestABV(e.target.value)}>
+                    <option value="">Select Destination Airport ABV</option>
+                    {
+                        destABVList.map(function (airportAbv, index) {
+                            return <option key={'start' + index} value={airportAbv}>{airportAbv}</option>
+                        })
+                    }
+                </select>
             </div>
+
             <div>
                 {/* Pass a handleChange to the dropdown to handle when a value is selected */}
                 {/* We have to do 'e.target.value' as the variable that gets passed to on change is an event */}
@@ -161,10 +196,10 @@ function Profitability(props) {
             </div>
             <div>
                 {/* Disable the button if we dont have a beginning and end year selected */}
-                <button disabled={beginningYear && endYear ? false : true} onClick={() => { callToOracle() }}>Calculate Flight Profitability</button>
+                <button disabled={beginningYear && endYear ? false : true} onClick={() => { getProfitabilityData() }}>Calculate Flight Profitability</button>
             </div>
             <div>
-                {oracleData &&
+                {profitabilityData &&
                     <canvas id="myChart" width="80%" height="20%"></canvas>
                 }
             </div>

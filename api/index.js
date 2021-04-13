@@ -38,13 +38,11 @@ app.get('/profitability', async function (req, res) {
 
     dbHelper.getProfitabilityData(beginningYear, endYear, originABV, destABV)
         .then(result => {
-            let newJsonResult = { message: result }
-            res.send(newJsonResult)
+            res.send(result)
         })//return result
-})
-
-app.get('/tourism', function (req, res) {
-    res.send('helloworld tour')
+        .catch(async function (error) {
+            res.status(500).send({ error: error })
+        })
 })
 
 app.get(`/enviromental-impact`, async function (req, res) {
@@ -60,5 +58,21 @@ app.get(`/enviromental-impact`, async function (req, res) {
             res.status(500).send({ error: error })
         })
 })
+
+app.get('/tourism', async function (req, res) {
+    let beginningYear = req.query.beginningYear
+    let endYear = req.query.endYear
+    let city = req.query.city
+
+    dbHelper.getTourismData(beginningYear, endYear, city)
+        .then(result => {
+            res.send(result)
+        })
+        .catch(async function (error) {
+            res.status(500).send({ error: error })
+        })
+})
+
+
 
 app.listen(3001)
