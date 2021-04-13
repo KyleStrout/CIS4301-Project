@@ -68,8 +68,8 @@ async function getFuelConsumption(beginningYear, endYear) {
     return new Promise(async (resolve, reject) => {
         // Create  query
         let query = `SELECT SUM((distance * 1.61 / 100) * 4.8 * passenger_num) AS fuel_used FROM huhuang.flights 
-        WHERE EXTRACT(YEAR From fly_date) >= 1990 AND 
-        EXTRACT(YEAR FROM fly_date) <= 2009
+        WHERE EXTRACT(YEAR From fly_date) >= ${beginningYear} AND 
+        EXTRACT(YEAR FROM fly_date) <= ${endYear}
         GROUP BY EXTRACT(YEAR FROM fly_date)
         ORDER BY EXTRACT(YEAR FROM fly_date) ASC`
 
@@ -100,8 +100,8 @@ async function getCO2Emissions(beginningYear, endYear) {
     return new Promise(async (resolve, reject) => {
 
         let query = `SELECT extract(year from fly_date), (SUM((distance * 1.61 / 100) * 4.8 * passenger_num) * .79 * 3.16) / 1000 AS CO2_Kilos FROM huhuang.flights 
-        WHERE EXTRACT(YEAR From fly_date) >= 1990 AND 
-        EXTRACT(YEAR FROM fly_date) <= 2009
+        WHERE EXTRACT(YEAR From fly_date) >= ${beginningYear} AND 
+        EXTRACT(YEAR FROM fly_date) <= ${endYear}
         GROUP BY EXTRACT(YEAR FROM fly_date)
         ORDER BY EXTRACT(YEAR FROM fly_date) ASC`
 
