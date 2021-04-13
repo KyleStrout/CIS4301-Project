@@ -45,16 +45,26 @@ app.get('/profitability', async function (req, res) {
         })
 })
 
-app.get('/tourism', function (req, res) {
-    res.send('helloworld tour')
-})
-
 app.get(`/enviromental-impact`, async function (req, res) {
     let beginningYear = req.query.beginningYear// Get web query param
     let endYear = req.query.endYear
 
     // call db function
     dbHelper.getCO2Emissions(beginningYear, endYear)
+        .then(result => {
+            res.send(result)
+        })
+        .catch(async function (error) {
+            res.status(500).send({ error: error })
+        })
+})
+
+app.get('/tourism', async function (req, res) {
+    let beginningYear = req.query.beginningYear
+    let endYear = req.query.endYear
+    let city = req.query.city
+
+    dbHelper.getTourismData(beginningYear, endYear, city)
         .then(result => {
             res.send(result)
         })

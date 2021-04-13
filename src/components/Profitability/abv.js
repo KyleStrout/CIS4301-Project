@@ -1377,6 +1377,7 @@ function getDestinationABVList(destinationABVList) {
 }
 
 module.exports = {
-    originABVList: this.originABVList
+    getOriginABVList: getOriginABVList,
+    getDestinationABVList: getDestinationABVList
 }
 

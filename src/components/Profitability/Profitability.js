@@ -3,14 +3,16 @@ import { useEffect, useState } from 'react'
 import Chart from 'chart.js/auto';
 import { Switch, Route, Link } from 'react-router-dom'
 
+const abvHelper = require('./abv')
+
 
 function Profitability(props) {
     const MAX_END_YEAR = 2009
     const MIN_BEGINNING_YEAR = 1990
     let originABVList = []
-    $.getScript('./abv', function () {
-        getOriginABVList(originABVList)
-    })
+    originABVList = abvHelper.getOriginABVList(originABVList)
+    let destABVList = []
+    destABVList = abvHelper.getDestinationABVList(destABVList)
     const [beginningYear, setBeginningYear] = useState(null)
     const [endYear, setEndYear] = useState(null)
     const [chart, setChart] = useState(null)
@@ -149,21 +151,21 @@ function Profitability(props) {
             <div>
                 <h3>Flight Profitability</h3>
             </div>
-            <div>
-                <h6>Origin Abbreviation</h6>
-                <input onChange={event => setOriginABV(event.target.value)} />
 
-            </div>
-            <div>
-                <h6>Destination Abbreviation</h6>
-                <input onChange={event => setDestABV(event.target.value)} />
-            </div>
 
             <div>
-                <select>
+                <select onChange={(e) => { setOriginABV(e.target.value) }}>
                     <option value="">Select Origin Airport ABV</option>
                     {
                         originABVList.map(function (airportAbv, index) {
+                            return <option key={'start' + index} value={airportAbv}>{airportAbv}</option>
+                        })
+                    }
+                </select>
+                <select onChange={(e) => setDestABV(e.target.value)}>
+                    <option value="">Select Destination Airport ABV</option>
+                    {
+                        destABVList.map(function (airportAbv, index) {
                             return <option key={'start' + index} value={airportAbv}>{airportAbv}</option>
                         })
                     }
