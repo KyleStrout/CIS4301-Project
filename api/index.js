@@ -38,9 +38,11 @@ app.get('/profitability', async function (req, res) {
 
     dbHelper.getProfitabilityData(beginningYear, endYear, originABV, destABV)
         .then(result => {
-            let newJsonResult = { message: result }
-            res.send(newJsonResult)
+            res.send(result)
         })//return result
+        .catch(async function (error) {
+            res.status(500).send({ error: error })
+        })
 })
 
 app.get('/tourism', function (req, res) {
@@ -60,5 +62,7 @@ app.get(`/enviromental-impact`, async function (req, res) {
             res.status(500).send({ error: error })
         })
 })
+
+
 
 app.listen(3001)

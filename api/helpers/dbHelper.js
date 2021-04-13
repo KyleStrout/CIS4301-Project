@@ -85,8 +85,14 @@ async function getProfitabilityData(beginningYear, endYear, originABV, destABV) 
     // The Promise object represents the eventual completion (or failure) of an asynchronous operation and its resulting value.
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
     return new Promise(async (resolve, reject) => {
-        let query = `SELECT * FROM FLIGHTS WHERE BEGINNING_YEAR = ${beginningYear} AND END_YEAR = ${endYear} `
-            + `AND ORIGIN AIRPORT ABV = ${originABV} AND DESTINATION AIRPORT ABV = ${destABV}`
+        let query = `SELECT avg(passenger_num / seat_num) as ratio
+        FROM huhuang.flights 
+        WHERE EXTRACT(YEAR FROM fly_date) >= ${beginningYear} AND
+        EXTRACT(YEAR FROM fly_date) <= ${endYear} AND
+        original_airport = '${originABV}' AND
+        destination_airport = '${destABV}' AND seat_num != 0
+        GROUP BY EXTRACT(YEAR FROM fly_date)
+        ORDER BY EXTRACT(YEAR FROM fly_date) ASC`
 
         executeSQL(query)
             .then(dbresult => { resolve(dbresult) })
