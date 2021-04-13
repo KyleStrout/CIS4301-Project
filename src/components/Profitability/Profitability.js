@@ -7,8 +7,10 @@ import { Switch, Route, Link } from 'react-router-dom'
 function Profitability(props) {
     const MAX_END_YEAR = 2009
     const MIN_BEGINNING_YEAR = 1990
-    var originABVList = []
-    originABVList = abv.getOriginABVList(originABVList)
+    let originABVList = []
+    $.getScript('./abv', function () {
+        getOriginABVList(originABVList)
+    })
     const [beginningYear, setBeginningYear] = useState(null)
     const [endYear, setEndYear] = useState(null)
     const [chart, setChart] = useState(null)
