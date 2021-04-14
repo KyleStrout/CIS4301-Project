@@ -1,6 +1,5 @@
 import React from "react";
 import { useEffect, useState } from 'react'
-import { Switch, Route, Link } from 'react-router-dom'
 
 function Home(props) {
     return (
@@ -15,13 +14,6 @@ function Home(props) {
 
                     Go ahead and give it a try! Click one of the links in the navigation bar to get started.
                 </p>
-            </div>
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="disclaimer">
-                        <p><br></br>This data was provided courtesy of <a href="https://openflights.org/help/database.html">OpenFlights</a> and compiled by <a href="Kaggle.com">Kaggle.com</a> user <a href="https://www.kaggle.com/flashgordon/">flashgordon</a>. It can be found at the following <a href="https://www.kaggle.com/flashgordon/usa-airport-dataset">link</a></p>
-                    </div>
-                </div>
             </div>
         </React.Fragment>
     );

@@ -54,7 +54,6 @@ function App() {
     { To: '/environmental-impact', Content: 'Environmental Impact' },
   ])
 
-
   return (
     <React.Fragment>
       <div className="App">

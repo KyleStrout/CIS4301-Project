@@ -1,91 +1,99 @@
 import React from "react";
 import Chart from 'chart.js/auto';
 import { useEffect, useState } from 'react'
-import { Switch, Route, Link } from 'react-router-dom'
+import { getNumbersInRange } from '../../helpers'
 
 function FuelConsumption(props) {
-    const MAX_END_YEAR = 2021
-    const MIN_BEGINNING_YEAR = 1950
+    const MAX_END_YEAR = 2009
+    const MIN_BEGINNING_YEAR = 1990
 
+    // Form Fields
     const [beginningYear, setBeginningYear] = useState(null)
     const [endYear, setEndYear] = useState(null)
+
     const [chart, setChart] = useState(null)
+    // Form data
     const [validYears, setValidYears] = useState(null)
     const [validEndYears, setValidEndYears] = useState(null)
-    const [oracleData, setOracleData] = useState(null)
 
-    // Call on render, create a list of valid years
-    // useEffect takes an inline function and list of variables it should listen to
-    useEffect(function () {
-        let newListOfYears = []
-        // iterate through some time
-        for (let index = MIN_BEGINNING_YEAR; index < MAX_END_YEAR; index++) {
-            newListOfYears.push(index)
-        }
-        // Set the 'validYears' state to the new list of valid years
-        setValidYears(newListOfYears)
+    // Query data
+    const [fuelConsumptionData, setFuelConsumptionData] = useState(null)
+
+    // Get start Years
+    useEffect(() => {
+        let listOfvalidYears = getNumbersInRange(MIN_BEGINNING_YEAR, MAX_END_YEAR)
+        setValidYears(listOfvalidYears)
     }, [])
 
-    // if variables are updated, calls the inline function 
+    // Get End Years
     useEffect(function () {
-        let newEndYears = []
-        for (let index = beginningYear; index < MAX_END_YEAR; index++) {
-            newEndYears.push(index)
-        }
-
-        setValidEndYears(newEndYears)
+        let listOfvalidYears = getNumbersInRange(beginningYear, MAX_END_YEAR)
+        setValidEndYears(listOfvalidYears)
     }, [beginningYear])
 
     // Create Chart
     useEffect(function () {
-        // Get our chart element
-        let ctx = document.getElementById('myChart')
+        if (fuelConsumptionData !== null) {
+            // Get our chart element
+            let ctx = document.getElementById('myChart')
 
-        // Create Labels 
-        let chartYears = []
-        for (let index = beginningYear; index <= endYear; index++) {
-            chartYears.push(index)
-        }
-        // Initialize our chart
-        let myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: chartYears,
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+            // Create Labels 
+            let chartYears = []
+            for (let index = beginningYear; index <= endYear; index++) {
+                chartYears.push(index)
+            }
+            let fuelData = []
+
+            if (fuelConsumptionData) {
+                for (let index = 0; index < fuelConsumptionData.length; index++) {
+                    fuelData.push(fuelConsumptionData[index].FUEL_USED)
                 }
             }
-        });
-        return () => {
-            myChart.destroy()
+
+            // Initialize our chart
+            let myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartYears,
+                    datasets: [{
+                        label: 'Litres Of Fuel Used Per Year',
+                        data: fuelData,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            setChart(myChart)
         }
-        setChart(myChart)
-    }, [oracleData])// Listens for oracle data to update before creating chart
+
+        return () => {
+            if (chart) {
+                chart.destroy()
+            }
+        }
+    }, [fuelConsumptionData])// Listens for fuelConsumptionData to update before creating chart
 
     // clears chart 
     function resetChart() {
@@ -95,12 +103,13 @@ function FuelConsumption(props) {
         }
     }
 
-    // TODO: Create file to work with database and implement this here
-    function callToOracle() {
-        if (beginningYear && endYear) {
-            let query = 'SELECT * FROM TABLE WHERE START_YEAR = ' + beginningYear + ' AND END_YEAR = ' + endYear
-            setOracleData(query)
-        }
+    async function getFuelConsumption() {
+        let url = `http://localhost:3001/fuel-consumption?beginningYear=${beginningYear}&endYear=${endYear}`
+        await fetch(url).then(requestResponse => {
+            requestResponse.json().then(json => {
+                setFuelConsumptionData(json)
+            })
+        })
     }
 
     function handleBeginYearChange(value) {
@@ -142,14 +151,14 @@ function FuelConsumption(props) {
             </div>
             <div>
                 {/* Disable the button if we dont have a beginning and end year selected */}
-                <button disabled={beginningYear && endYear ? false : true} onClick={() => { callToOracle() }}>Calculate Fuel Consumption</button>
+                <button disabled={beginningYear && endYear ? false : true} onClick={() => { getFuelConsumption() }}>Calculate Fuel Consumption</button>
             </div>
             <div>
-                {oracleData &&
+                {fuelConsumptionData &&
                     <canvas id="myChart" width="80%" height="20%"></canvas>
                 }
             </div>
-        </React.Fragment>
+        </React.Fragment >
     );
 }
 
