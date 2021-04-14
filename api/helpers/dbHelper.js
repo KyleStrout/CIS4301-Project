@@ -176,6 +176,39 @@ async function getAverageMonthlyTourismData(beginningYear, endYear, city) {
     })
 }
 
+async function getPopulation(beginningYear, endYear, originABV, destABV) {
+    // promise is async/await
+    // The Promise object represents the eventual completion (or failure) of an asynchronous operation and its resulting value.
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+    return new Promise(async (resolve, reject) => {
+        let query = `SELECT SUM(Flight_Num) as flightsSum FROM huhuang.flights
+        WHERE EXTRACT(YEAR From Fly_date) >= ${beginningYear} AND EXTRACT(YEAR FROM Fly_date) <= ${endYear}
+        AND Original_Airport = '${originABV}' AND Destination_Airport = '${destABV}'
+        GROUP BY EXTRACT(YEAR FROM Fly_date)
+        ORDER BY EXTRACT(YEAR FROM fly_date)`
+
+        executeSQL(query)
+            .then(result => { resolve(result) })
+            .catch(error => { reject(error) })
+    })
+}
+
+async function getPopulationNum(beginningYear, endYear, originABV, destABV) {
+    // promise is async/await
+    // The Promise object represents the eventual completion (or failure) of an asynchronous operation and its resulting value.
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+    return new Promise(async (resolve, reject) => {
+        let query = `SELECT Destination_Population as population FROM huhuang.flights
+        WHERE EXTRACT(YEAR From Fly_date) >= ${beginningYear} AND EXTRACT(YEAR FROM Fly_date) <= ${endYear} AND extract(MONTH FROM Fly_date) = 01
+        AND Original_Airport = '${originABV}' AND Destination_Airport = '${destABV}'
+        ORDER BY EXTRACT(YEAR FROM fly_date)`
+
+        executeSQL(query)
+            .then(result => { resolve(result) })
+            .catch(error => { reject(error) })
+    })
+}
+
 module.exports = {
     getBorders: getBorders,
     getFuelConsumption: getFuelConsumption,
@@ -185,5 +218,7 @@ module.exports = {
     getAverageMonthlyTourismData: getAverageMonthlyTourismData,
     getCities: getCities,
     getOriginABV: getOriginABV,
-    getDestABV: getDestABV
+    getDestABV: getDestABV,
+    getPopulation: getPopulation,
+    getPopulationNum: getPopulationNum
 }
