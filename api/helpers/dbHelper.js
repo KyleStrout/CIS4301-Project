@@ -31,33 +31,45 @@ async function executeSQL(query) {
     })
 }
 
+async function getCities() {
+    return new Promise(async (resolve, reject) => {
+        let query = 'SELECT DISTINCT city FROM HUHUANG.Airport ORDER BY city ASC'
+
+        executeSQL(query)
+            .then(dbresult => { resolve(dbresult) })
+            .catch(error => { reject(error) })
+    })
+}
+
+async function getOriginABV() {
+    return new Promise(async (resolve, reject) => {
+        let query = 'SELECT DISTINCT original_airport FROM huhuang.flights ORDER BY original_airport ASC'
+
+        executeSQL(query)
+            .then(dbresult => { resolve(dbresult) })
+            .catch(error => { reject(error) })
+    })
+}
+
+async function getDestABV() {
+    return new Promise(async (resolve, reject) => {
+        let query = 'SELECT DISTINCT destination_airport FROM huhuang.flights ORDER BY destination_airport ASC'
+
+        executeSQL(query)
+            .then(dbresult => { resolve(dbresult) })
+            .catch(error => { reject(error) })
+    })
+}
+
 async function getBorders() {
     return new Promise(async (resolve, reject) => {
-        let connection;
-        try {
-            connection = await oracledb.getConnection({
-                user: config.parsed.DB_USERNAME,
-                password: config.parsed.DB_PASSWORD,
-                connectString: '(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = oracle.cise.ufl.edu)(PORT = 1521))(CONNECT_DATA = (SID = orcl)))'
-            });
+        // Create  query
+        let query = `SELECT * FROM borders`
 
-            const result = await connection.execute(
-                `SELECT * FROM borders`,
-            );
-            resolve(result.rows)
-
-        } catch (err) {
-            console.error(err)
-            reject(err);
-        } finally {
-            if (connection) {
-                try {
-                    await connection.close();
-                } catch (err) {
-                    reject(err);
-                }
-            }
-        }
+        // Call to oracle
+        executeSQL(query)
+            .then(dbresult => { resolve(dbresult) })
+            .catch(error => { reject(error) })
     })
 }
 
@@ -81,9 +93,6 @@ async function getFuelConsumption(beginningYear, endYear) {
 }
 
 async function getProfitabilityData(beginningYear, endYear, originABV, destABV) {
-    // promise is async/await
-    // The Promise object represents the eventual completion (or failure) of an asynchronous operation and its resulting value.
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
     return new Promise(async (resolve, reject) => {
         let query = `SELECT avg(passenger_num / seat_num) as ratio
         FROM huhuang.flights 
@@ -97,14 +106,11 @@ async function getProfitabilityData(beginningYear, endYear, originABV, destABV) 
         executeSQL(query)
             .then(dbresult => { resolve(dbresult) })
             .catch(error => { reject(error) })
-
-
     })
 }
 
 async function getCO2Emissions(beginningYear, endYear) {
     return new Promise(async (resolve, reject) => {
-
         let query = `SELECT extract(year from fly_date), (SUM((distance * 1.61 / 100) * 4.8 * passenger_num) * .79 * 3.16) / 1000 AS CO2_Kilos FROM huhuang.flights 
         WHERE EXTRACT(YEAR From fly_date) >= ${beginningYear} AND 
         EXTRACT(YEAR FROM fly_date) <= ${endYear}
@@ -118,9 +124,6 @@ async function getCO2Emissions(beginningYear, endYear) {
 }
 
 async function getTourismData(beginningYear, endYear, city) {
-    // promise is async/await
-    // The Promise object represents the eventual completion (or failure) of an asynchronous operation and its resulting value.
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
     return new Promise(async (resolve, reject) => {
         let query = `WITH t AS(
             SELECT DISTINCT huhuang.airport.abbreviation AS air 
@@ -162,7 +165,7 @@ async function getAverageMonthlyTourismData(beginningYear, endYear, city) {
             FROM s  
             GROUP BY fly_date ORDER BY fly_date ASC
             )
-            SELECT AVG(Total_Travlers) AS AVG_Per_Month, EXTRACT(MONTH From fly_date)
+            SELECT AVG(Total_Travlers) AS AVG_Per_Month
             FROM R 
             GROUP BY EXTRACT(MONTH From fly_date) ORDER BY EXTRACT(MONTH From fly_date) ASC`
 
@@ -179,6 +182,8 @@ module.exports = {
     getProfitabilityData: getProfitabilityData,
     getCO2Emissions: getCO2Emissions,
     getTourismData: getTourismData,
-    getAverageMonthlyTourismData: getAverageMonthlyTourismData
-
+    getAverageMonthlyTourismData: getAverageMonthlyTourismData,
+    getCities: getCities,
+    getOriginABV: getOriginABV,
+    getDestABV: getDestABV
 }
