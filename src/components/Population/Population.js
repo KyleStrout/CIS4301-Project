@@ -1,107 +1,98 @@
 import React from "react";
 import { useEffect, useState } from 'react'
 import Chart from 'chart.js/auto';
-import { Switch, Route, Link } from 'react-router-dom'
-<style type="text/css"></style>
+import { getNumbersInRange } from '../../helpers'
 
 function Population(props) {
     const MAX_END_YEAR = 2009
     const MIN_BEGINNING_YEAR = 1990
 
+    // Drop down data
+    const [originABVList] = useState(props.originAbvs.map(abvs => abvs.ORIGINAL_AIRPORT))
+    const [destABVList] = useState(props.destinationsAbvs.map(abvs => abvs.DESTINATION_AIRPORT))
+
+    // Form Fields
     const [beginningYear, setBeginningYear] = useState(null)
     const [endYear, setEndYear] = useState(null)
-    const [chart, setChart] = useState(null)
-    const [validYears, setValidYears] = useState(null)
-    const [validEndYears, setValidEndYears] = useState(null)
-    const [oracleData, setOracleData] = useState(null)
     const [originABV, setOriginABV] = useState(null)
     const [destABV, setDestABV] = useState(null)
+
+    // Form data
+    const [validYears, setValidYears] = useState(null)
+    const [validEndYears, setValidEndYears] = useState(null)
+    const [chart, setChart] = useState(null)
+
+    // Query data
+    const [populationData, setPopulationData] = useState(null)
     const [populationPercentage, setPopulationPercentage] = useState(null)
 
-    // Call on render, create a list of valid years
-    // useEffect takes an inline function and list of variables it should listen to
-    useEffect(function () {
-        let newListOfYears = []
-        // iterate through some time
-        for (let index = MIN_BEGINNING_YEAR; index < MAX_END_YEAR; index++) {
-            newListOfYears.push(index)
-        }
-        // Set the 'validYears' state to the new list of valid years
-        setValidYears(newListOfYears)
+    // Get start Years
+    useEffect(() => {
+        let listOfvalidYears = getNumbersInRange(MIN_BEGINNING_YEAR, MAX_END_YEAR)
+        setValidYears(listOfvalidYears)
     }, [])
 
-    // if variables are updated, calls the inline function 
+    // Get End Years
     useEffect(function () {
-        let newEndYears = []
-        for (let index = beginningYear; index < MAX_END_YEAR; index++) {
-            newEndYears.push(index)
-        }
-
-        setValidEndYears(newEndYears)
+        let listOfvalidYears = getNumbersInRange(beginningYear, MAX_END_YEAR)
+        setValidEndYears(listOfvalidYears)
     }, [beginningYear])
-
-    useEffect(function () {
-        setOriginABV()
-    }, [])
-
-    useEffect(function () {
-        setDestABV()
-    }, [])
-
-    useEffect(function () {
-        setPopulationPercentage()
-    }, [])
 
     // Create Chart
     useEffect(function () {
-        // Get our chart element
-        let ctx = document.getElementById('myChart')
+        if (populationData) {
+            // Get our chart element
+            let ctx = document.getElementById('myChart')
 
-        // Create Labels 
-        let chartYears = []
-        for (let index = beginningYear; index <= endYear; index++) {
-            chartYears.push(index)
-        }
-        // Initialize our chart
-        let myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: chartYears,
-                datasets: [{
-                    label: originABV + ' to ' + destABV,
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+            // Create Labels 
+            let chartYears = []
+            for (let index = beginningYear; index <= endYear; index++) {
+                chartYears.push(index)
+            }
+            // Initialize our chart
+            let myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartYears,
+                    datasets: [{
+                        label: originABV + ' to ' + destABV,
+                        data: [12, 19, 3, 5, 2, 3],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
-        return () => {
-            myChart.destroy()
+            });
+            setChart(myChart)
         }
-        setChart(myChart)
-    }, [oracleData])// Listens for oracle data to update before creating chart
+
+        return () => {
+            if (chart) {
+                chart.destroy()
+            }
+        }
+    }, [populationData])// Listens for oracle data to update before creating chart
 
     // clears chart 
     function resetChart() {
@@ -112,10 +103,10 @@ function Population(props) {
     }
 
     // TODO: Create file to work with database and implement this here
-    function callToOracle() {
+    function getPopulationData() {
         if (beginningYear && endYear) {
             let query = 'SELECT * FROM TABLE WHERE START_YEAR = ' + beginningYear + ' AND END_YEAR = ' + endYear
-            setOracleData(query)
+            setPopulationData(query)
         }
     }
 
@@ -135,13 +126,22 @@ function Population(props) {
                 <h3>Population</h3>
             </div>
             <div>
-                <h6>Origin Abbreviation</h6>
-                <input onChange={event => setOriginABV(event.target.value)} />
-
-            </div>
-            <div>
-                <h6>Destination Abbreviation</h6>
-                <input onChange={event => setDestABV(event.target.value)} />
+                <select onChange={(e) => { setOriginABV(e.target.value) }}>
+                    <option value="">Select Origin Abbreviation</option>
+                    {
+                        originABVList.map(function (airportAbv, index) {
+                            return <option key={'start' + index} value={airportAbv}>{airportAbv}</option>
+                        })
+                    }
+                </select>
+                <select onChange={(e) => setDestABV(e.target.value)}>
+                    <option value="">Select Destination Abbreviation</option>
+                    {
+                        destABVList.map(function (airportAbv, index) {
+                            return <option key={'start' + index} value={airportAbv}>{airportAbv}</option>
+                        })
+                    }
+                </select>
             </div>
             <div>
                 {/* Pass a handleChange to the dropdown to handle when a value is selected */}
@@ -167,16 +167,14 @@ function Population(props) {
             </div>
             <div>
                 {/* Disable the button if we dont have a beginning and end year selected */}
-                <button disabled={beginningYear && endYear ? false : true} onClick={() => { callToOracle() }}>Calculate Flight Profitability</button>
+                <button disabled={beginningYear && endYear ? false : true} onClick={() => { getPopulationData() }}>Calculate Flight Profitability</button>
             </div>
             <div>
-                {oracleData &&
+                {populationData &&
                     <canvas id="myChart" width="80%" height="20%"></canvas>
                 }
             </div>
             <div>
-
-                <p>Population Percentage Change: </p>
             </div>
         </React.Fragment>
     );

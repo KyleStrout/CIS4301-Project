@@ -7,7 +7,7 @@ app.use(cors())// allow all origins
 
 // endpoints, somewhere you can request data
 
-app.get('/fuel-consumption', async function (req, res) {
+app.get('/fuel-consumption', async function (req, res, next) {
     //http://localhost:3001/?beginningYear=1950&endYear=2012
     //http://localhost:3001/fuel-consumption?beginni1950&endYear=2012ngYear=
 
@@ -21,15 +21,15 @@ app.get('/fuel-consumption', async function (req, res) {
         })//return result
 })
 
-app.get('/borders', async function (req, res) {
-    await getBorders().then(dbResult => {
+app.get('/borders', async function (req, res, next) {
+    await dbHelper.getBorders().then(dbResult => {
         res.send(dbResult)
     }).catch(err => {
         res.send(err)
     })
 })
 
-app.get('/profitability', async function (req, res) {
+app.get('/profitability', async function (req, res, next) {
 
     let originABV = req.query.originABV
     let destABV = req.query.destABV
@@ -41,11 +41,11 @@ app.get('/profitability', async function (req, res) {
             res.send(result)
         })//return result
         .catch(async function (error) {
-            res.status(500).send({ error: error })
+            next(error)
         })
 })
 
-app.get(`/enviromental-impact`, async function (req, res) {
+app.get(`/enviromental-impact`, async function (req, res, next) {
     let beginningYear = req.query.beginningYear// Get web query param
     let endYear = req.query.endYear
 
@@ -55,11 +55,11 @@ app.get(`/enviromental-impact`, async function (req, res) {
             res.send(result)
         })
         .catch(async function (error) {
-            res.status(500).send({ error: error })
+            next(error)
         })
 })
 
-app.get('/tourism', async function (req, res) {
+app.get('/tourism', async function (req, res, next) {
     let beginningYear = req.query.beginningYear
     let endYear = req.query.endYear
     let city = req.query.city
@@ -69,7 +69,51 @@ app.get('/tourism', async function (req, res) {
             res.send(result)
         })
         .catch(async function (error) {
-            res.status(500).send({ error: error })
+            next(error)
+        })
+})
+
+app.get('/tourism-monthly', async function (req, res, next) {
+    let beginningYear = req.query.beginningYear
+    let endYear = req.query.endYear
+    let city = req.query.city
+
+    dbHelper.getAverageMonthlyTourismData(beginningYear, endYear, city)
+        .then(result => {
+            res.send(result)
+        })
+        .catch(async function (error) {
+            next(error)
+        })
+})
+
+app.get('/cities', async function (req, res, next) {
+    dbHelper.getCities()
+        .then(result => {
+            res.send(result)
+        })
+        .catch(async function (error) {
+            next(error)
+        })
+})
+
+app.get('/airports/origin', async function (req, res, next) {
+    dbHelper.getOriginABV()
+        .then(result => {
+            res.send(result)
+        })
+        .catch(async function (error) {
+            next(error)
+        })
+})
+
+app.get('/airports/destination', async function (req, res, next) {
+    dbHelper.getDestABV()
+        .then(result => {
+            res.send(result)
+        })
+        .catch(async function (error) {
+            next(error)
         })
 })
 

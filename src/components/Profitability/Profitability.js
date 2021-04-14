@@ -1,119 +1,104 @@
 import React from "react";
 import { useEffect, useState } from 'react'
 import Chart from 'chart.js/auto';
-import { Switch, Route, Link } from 'react-router-dom'
-
-const abvHelper = require('./abv')
-
+import { getNumbersInRange } from '../../helpers'
 
 function Profitability(props) {
     const MAX_END_YEAR = 2009
     const MIN_BEGINNING_YEAR = 1990
-    let originABVList = []
-    originABVList = abvHelper.getOriginABVList(originABVList)
-    let destABVList = []
-    destABVList = abvHelper.getDestinationABVList(destABVList)
-    const [beginningYear, setBeginningYear] = useState(null)
-    const [endYear, setEndYear] = useState(null)
-    const [chart, setChart] = useState(null)
-    const [validYears, setValidYears] = useState(null)
-    const [validEndYears, setValidEndYears] = useState(null)
-    const [profitabilityData, setProfitabilityData] = useState(null)
+
+    // Drop down data
+    const [originABVList] = useState(props.originAbvs.map(abvs => abvs.ORIGINAL_AIRPORT))
+    const [destABVList] = useState(props.destinationsAbvs.map(abvs => abvs.DESTINATION_AIRPORT))
+
+    // Form Fields
     const [originABV, setOriginABV] = useState(null)
     const [destABV, setDestABV] = useState(null)
+    const [beginningYear, setBeginningYear] = useState(null)
+    const [endYear, setEndYear] = useState(null)
 
-    // Call on render, create a list of valid years
-    // useEffect takes an inline function and list of variables it should listen to
-    useEffect(function () {
-        let newListOfYears = []
-        // iterate through some time
-        for (let index = MIN_BEGINNING_YEAR; index <= MAX_END_YEAR; index++) {
-            newListOfYears.push(index)
-        }
-        // Set the 'validYears' state to the new list of valid years
-        setValidYears(newListOfYears)
+    // Form Data
+    const [validYears, setValidYears] = useState(null)
+    const [validEndYears, setValidEndYears] = useState(null)
+    const [chart, setChart] = useState(null)
+
+    // Query data
+    const [profitabilityData, setProfitabilityData] = useState(null)
+
+    // Get start Years
+    useEffect(() => {
+        let listOfvalidYears = getNumbersInRange(MIN_BEGINNING_YEAR, MAX_END_YEAR)
+        setValidYears(listOfvalidYears)
     }, [])
 
-    // if variables are updated, calls the inline function 
+    // Get End Years
     useEffect(function () {
-        let newEndYears = []
-        for (let index = beginningYear; index <= MAX_END_YEAR; index++) {
-            newEndYears.push(index)
-        }
-
-        setValidEndYears(newEndYears)
+        let listOfvalidYears = getNumbersInRange(beginningYear, MAX_END_YEAR)
+        setValidEndYears(listOfvalidYears)
     }, [beginningYear])
 
-    useEffect(function () {
-
-
-        setOriginABV()
-    }, [])
-
-    useEffect(function () {
-        setDestABV()
-    }, [])
 
     // Create Chart
     useEffect(function () {
-        // Get our chart element
-        let ctx = document.getElementById('myChart')
+        if (profitabilityData !== null) {
+            let ctx = document.getElementById('myChart')
 
-        // Create Labels 
-        let chartYears = []
-        for (let index = beginningYear; index <= endYear; index++) {
-            chartYears.push(index)
-        }
+            // Create Labels 
+            let chartYears = []
+            for (let index = beginningYear; index <= endYear; index++) {
+                chartYears.push(index)
+            }
 
-        let pData = []
-        if (profitabilityData) {
+            let pData = []
             for (let index = 0; index < profitabilityData.length; index++) {
                 console.log(profitabilityData[index])
                 pData.push(profitabilityData[index].RATIO)
             }
-        }
 
-        // Initialize our chart
-        let myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: chartYears,
-                datasets: [{
-                    label: 'Profitability Ratio from ' + originABV + ' to ' + destABV,
-                    data: pData,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        suggestedMax: 1
+            // Initialize our chart
+            let myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartYears,
+                    datasets: [{
+                        label: 'Profitability Ratio from ' + originABV + ' to ' + destABV,
+                        data: pData,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 1
 
+                        }
                     }
                 }
-            }
-        });
-        return () => {
-            myChart.destroy()
+            });
+            setChart(myChart)
         }
-        setChart(myChart)
+        return () => {
+            if (chart) {
+                chart.destroy()
+            }
+        }
     }, [profitabilityData])// Listens for oracle data to update before creating chart
 
     // clears chart 
@@ -123,7 +108,6 @@ function Profitability(props) {
             setChart(null)
         }
     }
-
 
 
     async function getProfitabilityData() {
@@ -151,7 +135,6 @@ function Profitability(props) {
             <div>
                 <h3>Flight Profitability</h3>
             </div>
-
 
             <div>
                 <select onChange={(e) => { setOriginABV(e.target.value) }}>
