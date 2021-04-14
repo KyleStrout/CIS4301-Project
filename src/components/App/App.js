@@ -13,6 +13,7 @@ function App() {
   const [cities, setCities] = useState(null)
   const [destinationsAbvs, setDestinationsAbvs] = useState(null)
   const [originAbvs, setOriginAbvs] = useState(null)
+  // yo
 
   // Fetch cities
   useEffect(async () => {

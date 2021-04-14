@@ -117,6 +117,30 @@ app.get('/airports/destination', async function (req, res, next) {
         })
 })
 
+app.get('/population', async function (req, res) {
+    let beginningYear = req.query.beginningYear// Get web query param
+    let endYear = req.query.endYear
+    let originABV = req.query.originABV
+    let destABV = req.query.destABV
 
+    dbHelper.getPopulation(beginningYear, endYear, originABV, destABV)
+        .then(result => {
+            res.send(result)
+        })//return result
+})
+
+app.get('/population-num', async function (req, res) {
+    let beginningYear = req.query.beginningYear// Get web query param
+    let endYear = req.query.endYear
+    let originABV = req.query.originABV
+    let destABV = req.query.destABV
+
+    dbHelper.getPopulationNum(beginningYear, endYear, originABV, destABV)
+        .then(result => {
+            res.send(result)
+        })//return result
+
+
+})
 
 app.listen(3001)

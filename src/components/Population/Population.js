@@ -21,10 +21,11 @@ function Population(props) {
     const [validYears, setValidYears] = useState(null)
     const [validEndYears, setValidEndYears] = useState(null)
     const [chart, setChart] = useState(null)
+    const [chart2, setChart2] = useState(null)
 
     // Query data
     const [populationData, setPopulationData] = useState(null)
-    const [populationPercentage, setPopulationPercentage] = useState(null)
+    const [populationDataNum, setPopulationDataNum] = useState(null)
 
     // Get start Years
     useEffect(() => {
@@ -44,11 +45,20 @@ function Population(props) {
             // Get our chart element
             let ctx = document.getElementById('myChart')
 
-            // Create Labels 
+            // Create Labels
             let chartYears = []
             for (let index = beginningYear; index <= endYear; index++) {
                 chartYears.push(index)
             }
+
+            let popuData = []
+
+            if (populationData) {
+                for (let index = 0; index < populationData.length; index++) {
+                    popuData.push(populationData[index].FLIGHTSSUM)
+                }
+            }
+
             // Initialize our chart
             let myChart = new Chart(ctx, {
                 type: 'line',
@@ -56,7 +66,7 @@ function Population(props) {
                     labels: chartYears,
                     datasets: [{
                         label: originABV + ' to ' + destABV,
-                        data: [12, 19, 3, 5, 2, 3],
+                        data: popuData,
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
                             'rgba(54, 162, 235, 0.2)',
@@ -90,11 +100,11 @@ function Population(props) {
         return () => {
             if (chart) {
                 chart.destroy()
+                setChart(null)
             }
         }
     }, [populationData])// Listens for oracle data to update before creating chart
 
-    // clears chart 
     function resetChart() {
         if (chart) {
             chart.destroy()
@@ -102,21 +112,108 @@ function Population(props) {
         }
     }
 
-    // TODO: Create file to work with database and implement this here
-    function getPopulationData() {
-        if (beginningYear && endYear) {
-            let query = 'SELECT * FROM TABLE WHERE START_YEAR = ' + beginningYear + ' AND END_YEAR = ' + endYear
-            setPopulationData(query)
+    useEffect(function () {
+        if (populationDataNum) {
+            // Get our chart element
+            let ctx2 = document.getElementById('myChart2')
+
+            // Create Labels
+            let chartYears = []
+            for (let index = beginningYear; index <= endYear; index++) {
+                chartYears.push(index)
+            }
+
+            let popuNumData = []
+
+            if (populationDataNum) {
+                for (let index = 0; index < populationDataNum.length; index++) {
+                    popuNumData.push(populationDataNum[index].POPULATION)
+                }
+            }
+
+            // Initialize our chart
+            let myChart2 = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: chartYears,
+                    datasets: [{
+                        label: originABV + ' to ' + destABV,
+                        data: popuNumData,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            setChart2(myChart2)
         }
+
+        return () => {
+            if (chart2) {
+                chart2.destroy()
+                setChart2(null)
+            }
+        }
+    }, [populationDataNum])
+
+    // clears chart
+
+
+    function resetChart2() {
+        if (chart2) {
+            chart2.destroy()
+            setChart2(null)
+        }
+    }
+
+    async function getPopulation() {
+        let url = `http://localhost:3001/population?beginningYear=${beginningYear}&endYear=${endYear}&originABV=${originABV}&destABV=${destABV}`
+        await fetch(url).then(requestResponse => {
+            requestResponse.json().then(json => {
+                setPopulationData(json)
+            })
+        })
+    }
+
+    async function getPopulationNum() {
+        let url = `http://localhost:3001/population-num?beginningYear=${beginningYear}&endYear=${endYear}&originABV=${originABV}&destABV=${destABV}`
+        await fetch(url).then(requestResponse => {
+            requestResponse.json().then(json => {
+                setPopulationDataNum(json)
+            })
+        })
     }
 
     function handleBeginYearChange(value) {
         resetChart()
+        resetChart2()
         setBeginningYear(value)
     }
     // Handle change for the 'end year' dropdown
     function handleEndYearChange(value) {
         resetChart()
+        resetChart2()
         setEndYear(value)// set state
     }
 
@@ -167,7 +264,7 @@ function Population(props) {
             </div>
             <div>
                 {/* Disable the button if we dont have a beginning and end year selected */}
-                <button disabled={beginningYear && endYear ? false : true} onClick={() => { getPopulationData() }}>Calculate Flight Profitability</button>
+                <button disabled={beginningYear && endYear ? false : true} onClick={() => { getPopulation(); getPopulationNum() }}>Show Flight Number and Population Trend</button>
             </div>
             <div>
                 {populationData &&
@@ -175,6 +272,8 @@ function Population(props) {
                 }
             </div>
             <div>
+                {populationDataNum &&
+                    <canvas id="myChart2" width="80%" height="20%"></canvas>}
             </div>
         </React.Fragment>
     );
