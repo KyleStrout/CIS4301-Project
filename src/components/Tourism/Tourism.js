@@ -229,6 +229,10 @@ function Tourism(props) {
                 <h3>Tourism</h3>
             </div>
             <div>
+                <p>Based on your desired city and specified time frame, the graphs below show you the total number of travelers to this city via a flight per year <br></br>over the given period and the average number of travelers via flight per month based on the monthly data of each year of the time period.</p>
+                <p>You are able to see which years attracted more people to this city and what months tend to be busier when traveling to the desired city.</p>
+            </div>
+            <div>
                 <select onChange={(e) => { handleCityChange(e.target.value) }}>
                     <option value="">Select City</option>
                     {
@@ -271,11 +275,16 @@ function Tourism(props) {
                 }
 
             </div>
-
+            <div>
+                <p>The above line graph shows the influx of travelers to the seleted city over a range of years</p>
+            </div>
             <div>
                 {tourismData &&
                     <canvas id="myChart2" width="80%" height="20%"></canvas>
                 }
+            </div>
+            <div>
+                <p>The above bar graph shows the most popular months for travel based on average inbound passenger amount over the selected range of years.</p>
             </div>
         </React.Fragment>
 

@@ -128,6 +128,10 @@ function FuelConsumption(props) {
                 <h3>Fuel Consumption</h3>
             </div>
             <div>
+                <p>Using a general formula involving the number of passengers on and distance traveled by each flight over a given range of years,<br>
+                </br>the graph visualizes possible trends in the total amount of fuel consumed (L).</p>
+            </div>
+            <div>
                 {/* Pass a handleChange to the dropdown to handle when a value is selected */}
                 {/* We have to do 'e.target.value' as the variable that gets passed to on change is an event */}
                 <select onChange={(e) => { handleBeginYearChange(e.target.value) }}>

@@ -128,6 +128,10 @@ function EnviromentalImpact(props) {
                 <h3>Enviromental Impact</h3>
             </div>
             <div>
+                <p>By using a general formula to calculate the amount of emissions (metric tonnes CO2) produced by a group of flights,<br>
+                </br>the environmental impact visualization illustrates any possible trends over a given range of years.</p>
+            </div>
+            <div>
                 {/* Pass a handleChange to the dropdown to handle when a value is selected */}
                 {/* We have to do 'e.target.value' as the variable that gets passed to on change is an event */}
                 <select onChange={(e) => { handleBeginYearChange(e.target.value) }}>
