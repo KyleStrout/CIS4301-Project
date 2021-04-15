@@ -284,16 +284,12 @@ function Population(props) {
                     <canvas id="myChart" width="80%" height="20%"></canvas>
                 }
             </div>
-                <br></br>
-                <p>The first graph shows the total number of flights for each year from an origin airport to a destination.<br>
-                </br>Through the line chart, we can see whether the number of routes is increasing or decreasing every year.</p>
+
             <div>
                 {populationDataNum &&
                     <canvas id="myChart2" width="80%" height="20%"></canvas>}
             </div>
-            <div>
-                <p>The second chart demonstrates the trend in number of passengers between the given beginning and end year. </p>
-            </div>
+
         </React.Fragment>
     );
 }

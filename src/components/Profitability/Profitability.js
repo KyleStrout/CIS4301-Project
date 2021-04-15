@@ -146,8 +146,8 @@ function Profitability(props) {
 
             <div>
                 <p>This visualization is intended to measure the profitability of a particular flight path by calculating the ratio of the amount of occupied seats<br>
-                </br>to total seats on a number of flights over a given date range. The closer a calculated profitability ratio is to one for a given year, the more<br>
-                </br>profitable that year can be said to be.</p>
+                </br>to total seats on a number of flights between two airports over a given date range. The closer a calculated profitability ratio is to one for a <br>
+                    </br>given year, the more profitable that year can be said to be.</p>
             </div>
 
             <div>

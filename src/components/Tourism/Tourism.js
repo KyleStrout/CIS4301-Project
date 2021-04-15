@@ -146,6 +146,7 @@ function Tourism(props) {
                             'rgba(75, 192, 192, 0.2)',
                             'rgba(153, 102, 255, 0.2)',
                             'rgba(255, 159, 64, 0.2)'
+
                         ],
                         borderColor: [
                             'rgba(255, 99, 132, 1)',
@@ -276,15 +277,9 @@ function Tourism(props) {
 
             </div>
             <div>
-                <p>The first line graph shows the influx of travelers to the seleted city over a range of years</p>
-            </div>
-            <div>
                 {tourismData &&
                     <canvas id="myChart2" width="80%" height="20%"></canvas>
                 }
-            </div>
-            <div>
-                <p>The bar graph shows the most popular months for travel based on average inbound passenger amount over the selected range of years.</p>
             </div>
         </React.Fragment>
 
