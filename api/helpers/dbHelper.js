@@ -79,6 +79,10 @@ async function getFuelConsumption(beginningYear, endYear) {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
     return new Promise(async (resolve, reject) => {
         // Create  query
+        /* distance * 1.61 converts miles to km
+           Uses formula of 4.8 L/100 km per passenger
+
+        */
         let query = `SELECT SUM((distance * 1.61 / 100) * 4.8 * passenger_num) AS fuel_used FROM huhuang.flights 
         WHERE EXTRACT(YEAR From fly_date) >= ${beginningYear} AND 
         EXTRACT(YEAR FROM fly_date) <= ${endYear}
@@ -111,6 +115,12 @@ async function getProfitabilityData(beginningYear, endYear, originABV, destABV) 
 
 async function getCO2Emissions(beginningYear, endYear) {
     return new Promise(async (resolve, reject) => {
+        /* 
+          Since CO2 emmisions rely heavily on the amount of fuel burned, it uses partially the same formula as fuel consumption.
+          The fuel burned for each year is multiplied by .79 to get the weight in kilograms of the fuel that was burned.
+          It is then multiplied again based off of the formula that 3.16 kg of CO2 is emitted for every 1 kg of jet fuel burned.
+          Divided by 1000 to get the number in tonnes.
+        */
         let query = `SELECT extract(year from fly_date), (SUM((distance * 1.61 / 100) * 4.8 * passenger_num) * .79 * 3.16) / 1000 AS CO2_Kilos FROM huhuang.flights 
         WHERE EXTRACT(YEAR From fly_date) >= ${beginningYear} AND 
         EXTRACT(YEAR FROM fly_date) <= ${endYear}
@@ -198,10 +208,10 @@ async function getPopulationNum(beginningYear, endYear, originABV, destABV) {
     // The Promise object represents the eventual completion (or failure) of an asynchronous operation and its resulting value.
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
     return new Promise(async (resolve, reject) => {
-        let query = `SELECT Destination_Population as population FROM huhuang.flights
-        WHERE EXTRACT(YEAR From Fly_date) >= ${beginningYear} AND EXTRACT(YEAR FROM Fly_date) <= ${endYear} AND extract(MONTH FROM Fly_date) = 01
-        AND Original_Airport = '${originABV}' AND Destination_Airport = '${destABV}'
-        ORDER BY EXTRACT(YEAR FROM fly_date)`
+        let query = `SELECT Destination_Population/10 as population FROM huhuang.flights
+                     WHERE EXTRACT(YEAR From Fly_date) >= '${beginningYear}' AND EXTRACT(YEAR FROM Fly_date) <= ${endYear} AND extract(MONTH FROM Fly_date) = 01
+                       AND Original_Airport = '${originABV}' AND Destination_Airport = '${destABV}'
+                     ORDER BY EXTRACT(YEAR FROM fly_date)`
 
         executeSQL(query)
             .then(result => { resolve(result) })
