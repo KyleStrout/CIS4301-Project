@@ -119,7 +119,7 @@ function App() {
         <div className="container">
           <div className="row justify-content-center">
             <div className="disclaimer">
-              <p><br></br>This data was provided courtesy of <a href="https://openflights.org/help/database.html">OpenFlights</a> and compiled by <a href="Kaggle.com">Kaggle.com</a> user <a href="https://www.kaggle.com/flashgordon/">flashgordon</a>. It can be found at the following <a href="https://www.kaggle.com/flashgordon/usa-airport-dataset">link</a></p>
+              <center><p>This data was provided courtesy of <a href="https://openflights.org/help/database.html">OpenFlights</a> and compiled by <a href="https://kaggle.com">Kaggle.com</a> user <a href="https://www.kaggle.com/flashgordon/">flashgordon</a>. It can be found at the following <a href="https://www.kaggle.com/flashgordon/usa-airport-dataset">link</a>.</p></center>
             </div>
           </div>
         </div>
