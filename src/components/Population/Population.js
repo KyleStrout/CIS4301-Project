@@ -179,7 +179,6 @@ function Population(props) {
 
     // clears chart
 
-
     function resetChart2() {
         if (chart2) {
             chart2.destroy()
@@ -216,6 +215,16 @@ function Population(props) {
         resetChart2()
         setEndYear(value)// set state
     }
+    function handleOriginABVChange(value) {
+        resetChart()
+        resetChart2()
+        setOriginABV(value)
+    }
+    function handleDestABVChange(value) {
+        resetChart()
+        resetChart2()
+        setDestABV(value)
+    }
 
     return (
         <React.Fragment>
@@ -223,7 +232,7 @@ function Population(props) {
                 <h3>Population</h3>
             </div>
             <div>
-                <select onChange={(e) => { setOriginABV(e.target.value) }}>
+                <select onChange={(e) => { handleOriginABVChange(e.target.value) }}>
                     <option value="">Select Origin Abbreviation</option>
                     {
                         originABVList.map(function (airportAbv, index) {
@@ -231,7 +240,7 @@ function Population(props) {
                         })
                     }
                 </select>
-                <select onChange={(e) => setDestABV(e.target.value)}>
+                <select onChange={(e) => handleDestABVChange(e.target.value)}>
                     <option value="">Select Destination Abbreviation</option>
                     {
                         destABVList.map(function (airportAbv, index) {

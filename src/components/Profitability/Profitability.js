@@ -129,6 +129,14 @@ function Profitability(props) {
         setEndYear(value)
         // set state
     }
+    function handleOriginABVChange(value) {
+        resetChart()
+        setOriginABV(value)
+    }
+    function handleDestABVChange(value) {
+        resetChart()
+        setDestABV(value)
+    }
 
     return (
         <React.Fragment>
@@ -137,7 +145,7 @@ function Profitability(props) {
             </div>
 
             <div>
-                <select onChange={(e) => { setOriginABV(e.target.value) }}>
+                <select onChange={(e) => { handleOriginABVChange(e.target.value) }}>
                     <option value="">Select Origin Airport ABV</option>
                     {
                         originABVList.map(function (airportAbv, index) {
@@ -145,7 +153,7 @@ function Profitability(props) {
                         })
                     }
                 </select>
-                <select onChange={(e) => setDestABV(e.target.value)}>
+                <select onChange={(e) => handleDestABVChange(e.target.value)}>
                     <option value="">Select Destination Airport ABV</option>
                     {
                         destABVList.map(function (airportAbv, index) {
