@@ -276,7 +276,7 @@ function Tourism(props) {
 
             </div>
             <div>
-                <p>The above line graph shows the influx of travelers to the seleted city over a range of years</p>
+                <p>The first line graph shows the influx of travelers to the seleted city over a range of years</p>
             </div>
             <div>
                 {tourismData &&
@@ -284,7 +284,7 @@ function Tourism(props) {
                 }
             </div>
             <div>
-                <p>The above bar graph shows the most popular months for travel based on average inbound passenger amount over the selected range of years.</p>
+                <p>The bar graph shows the most popular months for travel based on average inbound passenger amount over the selected range of years.</p>
             </div>
         </React.Fragment>
 

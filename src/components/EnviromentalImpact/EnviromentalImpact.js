@@ -162,6 +162,21 @@ function EnviromentalImpact(props) {
                     <canvas id="myChart" width="80%" height="20%"></canvas>
                 }
             </div>
+            <br></br>
+            <center><div class="col-sm-9">
+                <div class="container">
+	                <div class="card bg-light mb-3">
+                        <h4 class="mb-0">
+                            Formula Explanation:
+			            </h4>
+                        <div class="card-body">
+                            <p>Initially, the calculations described on the fuel consumption query page are performed to estimate fuel consumed over a range of years.<br>
+                            </br>Using the density of jet fuel, the weight of the consumed fuel may be derived. For every one kilogram of jet fuel burned, approximately<br>
+                            </br>3.16 kg of carbon dioxide is released. This calculated amount of CO2 in kilograms is then divided by 1000 to deliver a result in metric tonnes.</p>
+                        </div>
+	                </div>
+                </div>
+            </div></center>
         </React.Fragment>
     );
 }

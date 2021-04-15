@@ -232,6 +232,10 @@ function Population(props) {
                 <h3>Population</h3>
             </div>
             <div>
+                <p>The local population trend visualization part would generate two broken line graphs according to the user inputs of original location,<br>
+                </br>destination, start year, and end year.</p>
+            </div>
+            <div>
                 <select onChange={(e) => { handleOriginABVChange(e.target.value) }}>
                     <option value="">Select Origin Abbreviation</option>
                     {
@@ -280,9 +284,15 @@ function Population(props) {
                     <canvas id="myChart" width="80%" height="20%"></canvas>
                 }
             </div>
+                <br></br>
+                <p>The first graph shows the total number of flights for each year from an origin airport to a destination.<br>
+                </br>Through the line chart, we can see whether the number of routes is increasing or decreasing every year.</p>
             <div>
                 {populationDataNum &&
                     <canvas id="myChart2" width="80%" height="20%"></canvas>}
+            </div>
+            <div>
+                <p>The second chart demonstrates the trend in number of passengers between the given beginning and end year. </p>
             </div>
         </React.Fragment>
     );

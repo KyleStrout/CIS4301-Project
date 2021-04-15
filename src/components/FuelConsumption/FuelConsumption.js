@@ -162,6 +162,21 @@ function FuelConsumption(props) {
                     <canvas id="myChart" width="80%" height="20%"></canvas>
                 }
             </div>
+            <br></br>
+            <center><div class="col-sm-7">
+                <div class="container">
+	                <div class="card bg-light mb-3">
+                        <h4 class="mb-0">
+                            Formula Explanation:
+			            </h4>
+                        <div class="card-body">
+                            <p>First, the distances traveled by all flights in miles are summed and multiplied by 1.6 to be converted to kilometers.<br>
+                            </br>For every 100 kilometers traveled by a passenger of average weight, approximately 4.8 liters of fuel are consumed.<br>
+                            </br>Multiplying the two quantities results in the average amount of fuel consumed for a given year.</p>
+                        </div>
+	                </div>
+                </div>
+            </div></center>
         </React.Fragment >
     );
 }
